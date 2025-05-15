@@ -1,6 +1,21 @@
-FROM node:14
-WORKDIR /usr/src/app
+FROM node:14 AS build
+
+WORKDIR /app
+
 COPY package*.json ./
-RUN npm install
+
+RUN npm install 
+
 COPY . .
-CMD [ "npm", "start" ]
+
+RUN npm run build
+
+FROM node:14-slim
+
+WORKDIR /app
+
+COPY --from=build /app .
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
